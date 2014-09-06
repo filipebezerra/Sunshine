@@ -1,19 +1,9 @@
 package io.github.filipebezerra.sunshine;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
-import java.util.Arrays;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -23,24 +13,19 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new ForecastFragment())
                     .commit();
         }
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
@@ -48,39 +33,4 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-            final String [] forecastMockData = {
-                    "Today - Sunny - 88/63",
-                    "Tomorrow - Foggy - 70/46",
-                    "Weds - Cloudy - 72/63",
-                    "Thurs - Rainy - 64;51",
-                    "Fri - Foggy - 70/46",
-                    "Sat - Sunny - 76/68"
-            };
-
-            final int forecastLayout = R.layout.list_item_forecast;
-
-            final ArrayAdapter<String> forecastAdapter = new ArrayAdapter<String>(
-                    getActivity(), forecastLayout, R.id.list_item_forecast_textview,
-                    Arrays.asList(forecastMockData));
-
-            ListView listViewForecast = (ListView) rootView.findViewById(R.id.listview_forecast);
-
-            listViewForecast.setAdapter(forecastAdapter);
-
-            return rootView;
-        }
-    }
 }
