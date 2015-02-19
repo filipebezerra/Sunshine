@@ -31,10 +31,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class ForecastFragment extends Fragment {
-
-    private static final String LOG_TAG = ForecastFragment.class.getSimpleName();
 
     private ArrayAdapter<String> mForecastAdapter;
 
@@ -57,8 +57,7 @@ public class ForecastFragment extends Fragment {
         final int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
-            FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute(getLocationPreference());
+            loadWeatherData();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -78,7 +77,8 @@ public class ForecastFragment extends Fragment {
         mForecastAdapter = new ArrayAdapter<String>(
                 getActivity(), // The current context (this activity)
                 R.layout.list_item_forecast, // The name of the layout ID.
-                R.id.list_item_forecast_textview // The ID of the textview to populate.
+                R.id.list_item_forecast_textview, // The ID of the textview to populate.
+                new ArrayList<String>()
         );
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -94,10 +94,18 @@ public class ForecastFragment extends Fragment {
             }
         });
 
+        return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        loadWeatherData();
+    }
+
+    private void loadWeatherData() {
         FetchWeatherTask weatherTask = new FetchWeatherTask();
         weatherTask.execute(getLocationPreference());
-
-        return rootView;
     }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
@@ -112,15 +120,26 @@ public class ForecastFragment extends Fragment {
         private String getReadableDateString(long time) {
             // Because the API returns a unix timestamp (measured in seconds),
             // it must be converted to milliseconds in order to be converted to valid date.
-            SimpleDateFormat shortenedDateFormat = new SimpleDateFormat("EEE MMM dd");
-            return shortenedDateFormat.format(time);
+            Date date = new Date(time * 1000);
+            SimpleDateFormat shortenedDateFormat = new SimpleDateFormat("E, MMM d");
+            return shortenedDateFormat.format(date);
         }
 
         /**
          * Prepare the weather high/lows for presentation.
          */
         private String formatHighLows(double high, double low) {
-            // For presentation, assume the user doesn't care about tenths of a degree.
+            SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String unitType = defaultSharedPreferences.getString(getString(R.string.pref_temperature_units_key),
+                    getString(R.string.pref_temperature_units_default_value));
+
+            if (unitType.equals(getString(R.string.pref_temperature_units_imperial))) {
+                high = (high * 1.8) + 32;
+                low = (low * 1.8) + 32;
+            } else if (! unitType.equals(getString(R.string.pref_temperature_units_metric))) {
+                Log.d(LOG_TAG, String.format("Unit type not found: %s", unitType));
+            }
+
             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
 

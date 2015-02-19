@@ -3,9 +3,21 @@
 
     <EditTextPreference
         android:summary="@string/pref_location"
+        android:title="@string/pref_location_title"
+        android:dialogTitle="@string/pref_location_dialog_title"
+        android:dialogIcon="@drawable/ic_my_location_grey600_24dp"
         android:key="@string/pref_location_key"
         android:defaultValue="@string/pref_location_default_value"
         android:inputType="text"
         android:singleLine="true" />
+
+    <ListPreference
+        android:summary="@string/pref_temperature_units"
+        android:title="@string/pref_temperature_units_title"
+        android:dialogTitle="@string/pref_temperature_units_dialog_title"
+        android:key="@string/pref_temperature_units_key"
+        android:defaultValue="@string/pref_temperature_units_default_value"
+        android:entryValues="@array/pref_temperature_unit_values"
+        android:entries="@array/pref_temperature_unit_options"/>
 
 </PreferenceScreen>
